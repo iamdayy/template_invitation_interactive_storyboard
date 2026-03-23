@@ -1,56 +1,40 @@
 <template>
-  <section id="guestbook" class="relative py-24 md:py-32 overflow-hidden" style="background-color: #050D1A">
+  <section id="guestbook" class="relative py-24 md:py-32 overflow-hidden" style="background-color: var(--bg-dark)">
     <div class="max-w-3xl mx-auto px-6">
       <!-- Header -->
       <div class="text-center mb-16">
         <p class="font-sans text-gold/70 text-xs tracking-[0.5em] uppercase mb-4 reveal">
-          Ucapan & Doa
+          {{ invitation.guestbook.sectionLabel }}
         </p>
         <h2 class="font-serif text-4xl md:text-5xl text-cream mb-4 reveal">
-          Buku Tamu
+          {{ invitation.guestbook.title }}
         </h2>
         <div class="gold-divider max-w-xs mx-auto mb-6" />
         <p class="font-sans text-cream/50 text-sm reveal">
-          Tinggalkan pesan dan doa terbaik untuk kami
+          {{ invitation.guestbook.description }}
         </p>
       </div>
 
       <!-- Form -->
-      <div
-        class="p-8 mb-12 reveal"
-        style="background: linear-gradient(135deg, rgba(201,168,76,0.06) 0%, rgba(5,13,26,0.9) 100%); border: 1px solid rgba(201,168,76,0.2);"
-      >
+      <div class="p-8 mb-12 reveal"
+        style="background: linear-gradient(135deg, var(--gold-06) 0%, var(--navy-dark-90) 100%); border: 1px solid var(--gold-20);">
         <form @submit.prevent="submitMessage">
           <div class="mb-5">
-            <label class="font-sans text-cream/70 text-xs tracking-widest uppercase mb-2 block">Nama</label>
-            <input
-              v-model="form.name"
-              type="text"
-              placeholder="Nama Anda"
-              maxlength="60"
-              required
-              class="luxury-input w-full px-4 py-3 text-sm"
-            />
+            <label class="font-sans text-cream/70 text-xs tracking-widest uppercase mb-2 block">{{
+              invitation.guestbook.nameLabel }}</label>
+            <input v-model="form.name" type="text" :placeholder="invitation.guestbook.namePlaceholder" maxlength="60"
+              required class="luxury-input w-full px-4 py-3 text-sm" />
           </div>
 
           <div class="mb-6">
-            <label class="font-sans text-cream/70 text-xs tracking-widest uppercase mb-2 block">Pesan & Doa</label>
-            <textarea
-              v-model="form.message"
-              placeholder="Ucapan dan doa terbaik untuk kedua mempelai..."
-              rows="4"
-              maxlength="300"
-              required
-              class="luxury-input w-full px-4 py-3 text-sm resize-none"
-            />
+            <label class="font-sans text-cream/70 text-xs tracking-widest uppercase mb-2 block">{{
+              invitation.guestbook.messageLabel }}</label>
+            <textarea v-model="form.message" :placeholder="invitation.guestbook.messagePlaceholder" rows="4"
+              maxlength="300" required class="luxury-input w-full px-4 py-3 text-sm resize-none" />
           </div>
 
-          <button
-            type="submit"
-            class="btn-gold w-full py-3 text-xs tracking-[0.2em] uppercase"
-            :disabled="submitting"
-          >
-            {{ submitting ? 'Mengirim...' : 'Kirim Pesan ✦' }}
+          <button type="submit" class="btn-gold w-full py-3 text-xs tracking-[0.2em] uppercase" :disabled="submitting">
+            {{ submitting ? invitation.guestbook.sendingButtonLabel : `${invitation.guestbook.sendButtonLabel} ✦` }}
           </button>
         </form>
       </div>
@@ -58,12 +42,8 @@
       <!-- Messages list -->
       <div class="space-y-4">
         <TransitionGroup name="message-list">
-          <div
-            v-for="msg in messages"
-            :key="msg.id"
-            class="p-5 reveal"
-            style="background: rgba(255,255,255,0.03); border: 1px solid rgba(201,168,76,0.1); border-left: 2px solid rgba(201,168,76,0.4);"
-          >
+          <div v-for="msg in messages" :key="msg.id" class="p-5 reveal"
+            style="background: rgba(255,255,255,0.03); border: 1px solid var(--gold-10); border-left: 2px solid var(--gold-40);">
             <div class="flex items-start justify-between mb-2">
               <p class="font-serif text-gold text-base">{{ msg.name }}</p>
               <p class="font-sans text-cream/30 text-xs">{{ msg.date }}</p>
@@ -73,7 +53,7 @@
         </TransitionGroup>
 
         <p v-if="messages.length === 0" class="text-center font-sans text-cream/30 text-sm py-8">
-          Jadilah yang pertama memberikan ucapan ✦
+          {{ invitation.guestbook.emptyState }} ✦
         </p>
       </div>
     </div>
@@ -81,6 +61,12 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, reactive, ref } from 'vue'
+
+import { useInvitationConfig } from '../composables/useInvitationConfig'
+
+const invitation = useInvitationConfig()
+
 interface GuestMessage {
   id: string
   name: string
@@ -96,14 +82,14 @@ const form = reactive({
 const submitting = ref(false)
 const messages = ref<GuestMessage[]>([])
 
-const STORAGE_KEY = 'wedding_guestbook'
+const STORAGE_KEY = invitation.guestbook.storageKey
 
 function loadMessages() {
   if (import.meta.client) {
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) messages.value = JSON.parse(stored)
-    } catch {}
+    } catch { }
   }
 }
 
@@ -149,6 +135,7 @@ onMounted(() => {
 .message-list-enter-active {
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .message-list-enter-from {
   opacity: 0;
   transform: translateY(-20px);

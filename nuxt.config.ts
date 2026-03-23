@@ -1,12 +1,14 @@
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@vueuse/nuxt'],
   ssr: true,
+
   components: [
     {
       path: '~/components',
       pathPrefix: false,
     },
   ],
+
   app: {
     head: {
       title: 'Wedding Invitation',
@@ -24,9 +26,19 @@ export default defineNuxtConfig({
         },
       ],
       style: [
-        { children: 'html { scroll-behavior: smooth; }' },
+        { innerHTML: 'html { scroll-behavior: smooth; }' },
       ],
     },
   },
+
+  runtimeConfig: {
+    whatsappAccessToken: '',
+    whatsappPhoneNumberId: '',
+  },
+
   css: ['~/assets/css/main.css'],
+
+  devtools: {
+    enabled: true,
+  },
 })

@@ -11,17 +11,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        navy: '#0A1628',
-        'navy-dark': '#050D1A',
-        gold: '#C9A84C',
-        'gold-light': '#E8C87A',
-        'gold-dark': '#A8893A',
-        cream: '#F5EDD3',
-        dark: '#050D1A',
+        navy: 'rgb(var(--color-navy) / <alpha-value>)',
+        'navy-dark': 'rgb(var(--color-navy-dark) / <alpha-value>)',
+        gold: 'rgb(var(--color-gold) / <alpha-value>)',
+        'gold-light': 'rgb(var(--color-gold-light) / <alpha-value>)',
+        'gold-dark': 'rgb(var(--color-gold-dark) / <alpha-value>)',
+        cream: 'rgb(var(--color-cream) / <alpha-value>)',
+        dark: 'rgb(var(--color-navy-dark) / <alpha-value>)',
       },
       fontFamily: {
-        serif: ['"Bodoni Moda"', 'Georgia', 'serif'],
-        sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-serif)'],
+        sans: ['var(--font-sans)'],
       },
       animation: {
         'curtain-left': 'curtainLeft 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards',
@@ -79,8 +79,10 @@ module.exports = {
         luxury: 'cubic-bezier(0.4, 0, 0.2, 1)',
       },
       backgroundImage: {
-        'gold-shimmer': 'linear-gradient(90deg, #C9A84C 0%, #E8C87A 50%, #C9A84C 100%)',
-        'navy-gradient': 'linear-gradient(180deg, #050D1A 0%, #0A1628 50%, #050D1A 100%)',
+        'gold-shimmer':
+          'linear-gradient(90deg, rgb(var(--color-gold)) 0%, rgb(var(--color-gold-light)) 50%, rgb(var(--color-gold)) 100%)',
+        'navy-gradient':
+          'linear-gradient(180deg, rgb(var(--color-navy-dark)) 0%, rgb(var(--color-navy)) 50%, rgb(var(--color-navy-dark)) 100%)',
       },
     },
   },
