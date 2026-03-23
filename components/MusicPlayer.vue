@@ -1,31 +1,54 @@
 <template>
   <div v-show="visible" class="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
-    <!-- Tooltip -->
-    <Transition name="tooltip">
-      <div v-if="showTooltip"
-        class="font-sans text-xs text-cream/80 bg-navy-dark border border-gold/20 px-3 py-1.5 rounded pointer-events-none">
-        {{ hasAudioFile ? (isPlaying ? invitation.music.activeTooltip : invitation.music.playTooltip) :
-          invitation.music.missingFileTooltip }}
+    <!-- Minimized State -->
+    <div v-if="playerMinimized" class="flex flex-col items-end gap-2">
+      <button title="Expand Music Player"
+        class="w-10 h-10 rounded-full flex items-center justify-center text-sm hover:scale-110 transition-all duration-300 bg-gold/20 border border-gold/35 text-gold hover:text-gold-light"
+        @click="playerMinimized = false">
+        ♪
+      </button>
+    </div>
+
+    <!-- Expanded State -->
+    <div v-else class="flex flex-col items-end gap-2">
+      <!-- Tooltip -->
+      <Transition name="tooltip">
+        <div v-if="showTooltip"
+          class="font-sans text-xs text-cream/80 bg-navy-dark border border-gold/20 px-3 py-1.5 rounded pointer-events-none">
+          {{ hasAudioFile ? (isPlaying ? invitation.music.activeTooltip : invitation.music.playTooltip) :
+            invitation.music.missingFileTooltip }}
+        </div>
+      </Transition>
+
+      <!-- Controls -->
+      <div class="flex items-center gap-2">
+        <!-- Player button -->
+        <button
+          class="relative w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
+          :class="!hasAudioFile ? 'opacity-60 cursor-not-allowed hover:scale-100' : ''" :disabled="!hasAudioFile"
+          :style="isPlaying
+            ? 'background: linear-gradient(135deg, var(--text-gold), rgb(var(--color-gold-dark))); box-shadow: 0 0 20px var(--gold-40);'
+            : 'background: var(--navy-90); border: 1px solid var(--gold-35); box-shadow: 0 4px 15px rgba(0,0,0,0.4);'"
+          @click="toggleMusic" @mouseenter="showTooltip = true" @mouseleave="showTooltip = false">
+          <!-- Animated rings when playing -->
+          <div v-if="isPlaying" class="absolute inset-0 rounded-full border border-gold/30 animate-ping" />
+          <div v-if="isPlaying" class="absolute inset-0 scale-125 rounded-full border border-gold/15 animate-ping"
+            style="animation-delay: 0.5s" />
+
+          <!-- Icon -->
+          <span class="text-xl" :class="isPlaying ? 'music-note-anim text-navy-dark' : 'text-gold'">
+            {{ isPlaying ? '♪' : '♫' }}
+          </span>
+        </button>
+
+        <!-- Minimize button -->
+        <button title="Minimize Music Player"
+          class="w-10 h-10 rounded-full flex items-center justify-center text-lg hover:scale-110 transition-all duration-300 bg-gold/10 border border-gold/35 text-gold hover:text-gold-light"
+          @click="playerMinimized = true">
+          −
+        </button>
       </div>
-    </Transition>
-
-    <!-- Player button -->
-    <button
-      class="relative w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
-      :class="!hasAudioFile ? 'opacity-60 cursor-not-allowed hover:scale-100' : ''" :disabled="!hasAudioFile" :style="isPlaying
-        ? 'background: linear-gradient(135deg, var(--text-gold), rgb(var(--color-gold-dark))); box-shadow: 0 0 20px var(--gold-40);'
-        : 'background: var(--navy-90); border: 1px solid var(--gold-35); box-shadow: 0 4px 15px rgba(0,0,0,0.4);'"
-      @click="toggleMusic" @mouseenter="showTooltip = true" @mouseleave="showTooltip = false">
-      <!-- Animated rings when playing -->
-      <div v-if="isPlaying" class="absolute inset-0 rounded-full border border-gold/30 animate-ping" />
-      <div v-if="isPlaying" class="absolute inset-0 scale-125 rounded-full border border-gold/15 animate-ping"
-        style="animation-delay: 0.5s" />
-
-      <!-- Icon -->
-      <span class="text-xl" :class="isPlaying ? 'music-note-anim text-navy-dark' : 'text-gold'">
-        {{ isPlaying ? '♪' : '♫' }}
-      </span>
-    </button>
+    </div>
   </div>
 </template>
 
@@ -49,6 +72,7 @@ const props = withDefaults(
 
 const isPlaying = ref(false)
 const showTooltip = ref(false)
+const playerMinimized = ref(false)
 let audioElement: HTMLAudioElement | null = null
 
 const hasAudioFile = computed(() => Boolean(invitation.music.fileUrl?.trim()))
@@ -138,8 +162,21 @@ watch(
   }
 )
 
+watch(
+  () => playerMinimized.value,
+  (next) => {
+    if (!import.meta.client) return
+    localStorage.setItem('playerMinimized', next ? 'true' : 'false')
+  }
+)
+
 onMounted(() => {
   createAudioIfNeeded()
+  if (!import.meta.client) return
+  const storedPlayerMinimized = localStorage.getItem('playerMinimized')
+  if (storedPlayerMinimized !== null) {
+    playerMinimized.value = storedPlayerMinimized === 'true'
+  }
 })
 
 onUnmounted(() => {

@@ -40,9 +40,16 @@ Pengaturan default ada di `config/invitation.ts`:
 
 Pengguna bisa switch preset/tone langsung dari panel Theme di aplikasi (kiri bawah setelah undangan dibuka). Pilihan akan disimpan otomatis di browser.
 
+**Minimize Panel**: Panel tema dan musik player bisa diminimaze dengan tombol menit (`−`) untuk memberikan ruang lebih ke undangan. Klik icon ⚙️ atau ♪ untuk expand kembali. Status minimize disimpan di browser.
+
 ### Musik Dari File
 
 Player musik sekarang memakai file audio dari folder `public`.
+
+Fitur musik:
+- Musik otomatis play saat klik tombol "Buka Undangan"
+- Bisa di-minimize dengan tombol (−) untuk space lebih
+- Klik icon ♪ untuk expand player kembali
 
 Pengaturan di `config/invitation.ts`:
 
@@ -54,7 +61,7 @@ Langkah cepat:
 
 1. Taruh file musik di folder `public/audio`.
 2. Samakan nama file dengan `music.fileUrl`.
-3. Jalankan aplikasi, lalu klik tombol musik.
+3. Jalankan aplikasi, musiknya otomatis play saat undangan dibuka.
 
 ### Personalisasi nama tamu via URL
 

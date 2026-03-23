@@ -9,20 +9,39 @@
 
     <!-- Main Invitation Content -->
     <div v-if="opened" class="relative">
-      <div class="fixed left-4 bottom-6 z-40 bg-navy-dark/85 border border-gold/30 p-3 backdrop-blur-sm">
-        <p class="font-sans text-[10px] tracking-[0.2em] uppercase text-cream/60 mb-2">Theme</p>
-        <div class="flex items-center gap-2 mb-2">
-          <select v-model="selectedPreset" class="luxury-input text-xs px-2 py-1 min-w-[130px]"
-            @change="persistThemeSetting">
-            <option v-for="preset in presetOptions" :key="preset.id" :value="preset.id" class="bg-navy-dark text-cream">
-              {{ preset.label }}
-            </option>
-          </select>
-          <button
-            class="px-2.5 py-1 text-[10px] tracking-wider uppercase border border-gold/35 text-gold hover:bg-gold/10 transition-colors"
-            @click="toggleTone">
-            {{ selectedTone === 'dark' ? 'Gelap' : 'Cerah' }}
+      <div
+        class="fixed left-4 bottom-6 z-40 bg-navy-dark/85 border border-gold/30 p-3 backdrop-blur-sm transition-all duration-300">
+        <!-- Minimized State -->
+        <div v-if="themeMinimized" class="flex items-center justify-center gap-2">
+          <button title="Expand Theme" class="p-2 text-lg hover:text-gold transition-colors text-gold/70"
+            @click="themeMinimized = false">
+            ⚙️
           </button>
+        </div>
+
+        <!-- Expanded State -->
+        <div v-else>
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <p class="font-sans text-[10px] tracking-[0.2em] uppercase text-cream/60">Theme</p>
+            <button title="Minimize Theme" class="p-1 text-lg hover:text-gold transition-colors text-gold/70"
+              @click="themeMinimized = true">
+              −
+            </button>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <select v-model="selectedPreset" class="luxury-input text-xs px-2 py-1 min-w-[130px]"
+              @change="persistThemeSetting">
+              <option v-for="preset in presetOptions" :key="preset.id" :value="preset.id"
+                class="bg-navy-dark text-cream">
+                {{ preset.label }}
+              </option>
+            </select>
+            <button
+              class="px-2.5 py-1 text-[10px] tracking-wider uppercase border border-gold/35 text-gold hover:bg-gold/10 transition-colors"
+              @click="toggleTone">
+              {{ selectedTone === 'dark' ? 'Gelap' : 'Cerah' }}
+            </button>
+          </div>
         </div>
       </div>
       <FloatingNav :sections="invitation.navigation.sections" />
@@ -33,13 +52,14 @@
 
 <script setup lang="ts">
 import { useHead } from 'nuxt/app'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 import { useInvitationConfig } from './composables/useInvitationConfig'
 
 const invitation = useInvitationConfig()
 const opened = ref(false)
 const musicAutoPlayKey = ref(0)
+const themeMinimized = ref(true)
 
 type ThemeTone = 'dark' | 'light'
 type ThemePresetId = keyof typeof invitation.theme.presets
@@ -73,6 +93,11 @@ function toggleTone() {
 onMounted(() => {
   if (!import.meta.client) return
 
+  const storedThemeMinimized = localStorage.getItem('themeMinimized')
+  if (storedThemeMinimized !== null) {
+    themeMinimized.value = storedThemeMinimized === 'true'
+  }
+
   const storedPreset = localStorage.getItem('themePreset') as ThemePresetId | null
 
   if (storedPreset && invitation.theme.presets[storedPreset]) {
@@ -83,6 +108,14 @@ onMounted(() => {
   selectedTone.value = 'light'
   localStorage.setItem('themeTone', 'light')
 })
+
+watch(
+  () => themeMinimized.value,
+  (next) => {
+    if (!import.meta.client) return
+    localStorage.setItem('themeMinimized', next ? 'true' : 'false')
+  }
+)
 
 function hexToRgbTriplet(hex: string) {
   const normalized = hex.replace('#', '')
