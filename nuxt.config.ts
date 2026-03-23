@@ -1,9 +1,12 @@
 export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@vueuse/nuxt'],
   ssr: true,
-  components: {
-    pathPrefix: false,
-  },
+  components: [
+    {
+      path: '~/components',
+      pathPrefix: false,
+    },
+  ],
   app: {
     head: {
       title: 'Wedding Invitation',

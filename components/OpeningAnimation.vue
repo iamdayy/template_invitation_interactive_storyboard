@@ -16,7 +16,7 @@
     />
 
     <!-- Center Content -->
-    <div class="relative z-10 flex flex-col items-center px-8 text-center max-w-lg mx-auto">
+    <div class="relative z-30 flex flex-col items-center px-8 text-center max-w-lg mx-auto">
       <!-- Top ornament -->
       <div class="mb-6 opacity-0" :class="{ 'animate-fade-in': showContent }" style="animation-delay: 0.3s; animation-fill-mode: forwards;">
         <svg width="200" height="40" viewBox="0 0 200 40" class="text-gold">
